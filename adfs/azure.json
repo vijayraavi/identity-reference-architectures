@@ -171,7 +171,7 @@
               "vmCount": 2,
               "namePrefix": "ra-adfs-adfs",
               "computerNamePrefix": "adfs",
-              "size": "Standard_DS1_v2",
+              "size": "Standard_DS2_v2",
               "osType": "windows",
               "adminUsername": "testuser",
               "adminPassword": "AweS0me@PW",
@@ -252,7 +252,7 @@
                 "vmCount": 2,
                 "namePrefix": "ra-adfs-proxy",
                 "computerNamePrefix": "proxy",
-                "size": "Standard_DS1_v2",
+                "size": "Standard_DS2_v2",
                 "osType": "windows",
                 "adminUsername": "testuser",
                 "adminPassword": "AweS0me@PW",
@@ -290,7 +290,11 @@
                     "frontendIPConfigurations": [
                         {
                             "name": "ra-adfs-proxy-lb-fe",
-                            "loadBalancerType": "Public"
+                            "loadBalancerType": "Internal",
+                            "internalLoadBalancerSettings": {
+                                "privateIPAddress": "10.0.6.30",
+                                "subnetName": "proxy"
+                            }
                         }
                     ],
                     "backendPools": [
