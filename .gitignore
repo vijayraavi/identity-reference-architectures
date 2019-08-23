@@ -213,3 +213,11 @@ ModelManifest.xml
 
 #Not to include .ds_store file
 .DS_Store
+
+**/onprem-output-*.json
+**/onprem-script.ps1
+**/onprem-script.sh
+
+**/ntier-windows-output-*.json
+**/ntier-windows-script.ps1
+**/ntier-windows-script.sh

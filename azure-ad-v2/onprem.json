@@ -4,7 +4,6 @@
   "parameters": {
     "buildingBlocks": {
       "value": [
-
         {
           "type": "VirtualNetwork",
           "settings": [
@@ -31,7 +30,6 @@
             }
           ]
         },
-
         {
           "type": "NetworkSecurityGroup",
           "settings": [
@@ -45,204 +43,206 @@
               "virtualNetworks": [
                 {
                   "name": "ra-aad-onpremise-vnet",
-                  "subnets": [ "adds", "adc" ]
+                  "subnets": [
+                    "adds",
+                    "adc"
+                  ]
                 }
               ]
             }
           ]
         },
-
-
         {
           "type": "VirtualMachine",
           "settings": {
-              "vmCount": 3,
-              "namePrefix": "ra-aad-onpremise-adc",
-              "computerNamePrefix": "adc",
-              "size": "Standard_DS3_v2",
-              "osType": "windows",
-              "adminUsername": "testuser",
-              "adminPassword": "AweS0me@PW",
-              "virtualNetwork": {
-                  "name": "ra-aad-onpremise-vnet"
-              },
-              "nics": [
-                {
-                  "isPublic": true,
-                  "publicIPAllocationMethod": "Static",
-                  "subnetName": "adc",
-                  "privateIPAllocationMethod": "Static",
-                  "startingIPAddress": "192.168.1.4"
-                }
-              ],
-              "imageReference": {
-                "publisher": "MicrosoftWindowsServer",
-                "offer": "WindowsServer",
-                "sku": "2012-R2-Datacenter",
-                "version": "latest"
-              },
-              "dataDisks": {
-                "count": 1,
-                "diskSizeGB": 127,
-                "caching": "None",
-                "createOption": "Empty"
+            "vmCount": 3,
+            "namePrefix": "ra-aad-onpremise-adc",
+            "computerNamePrefix": "adc",
+            "size": "Standard_DS3_v2",
+            "osType": "windows",
+            "adminUsername": "testuser",
+            "adminPassword": "AweS0me@PW",
+            "virtualNetwork": {
+              "name": "ra-aad-onpremise-vnet"
+            },
+            "nics": [
+              {
+                "isPublic": true,
+                "publicIPAllocationMethod": "Static",
+                "subnetName": "adc",
+                "privateIPAllocationMethod": "Static",
+                "startingIPAddress": "192.168.1.4"
               }
+            ],
+            "imageReference": {
+              "publisher": "MicrosoftWindowsServer",
+              "offer": "WindowsServer",
+              "sku": "2012-R2-Datacenter",
+              "version": "latest"
+            },
+            "dataDisks": {
+              "count": 1,
+              "diskSizeGB": 127,
+              "caching": "None",
+              "createOption": "Empty"
             }
+          }
         },
-
-
         {
           "type": "VirtualMachine",
           "settings": {
-              "vmCount": 2,
-              "namePrefix": "ra-aad-onpremise-ad",
-              "computerNamePrefix": "ad",
-              "size": "Standard_DS3_v2",
-              "osType": "windows",
-              "adminUsername": "testuser",
-              "adminPassword": "AweS0me@PW",
-              "virtualNetwork": {
-                "name": "ra-aad-onpremise-vnet"
-              },
-              "nics": [
-                {
-                  "isPublic": true,
-                  "publicIPAllocationMethod": "Static",
-                  "subnetName": "adds",
-                  "privateIPAllocationMethod": "Static",
-                  "startingIPAddress": "192.168.0.4"
-                }
-              ],
-              "imageReference": {
-                "publisher": "MicrosoftWindowsServer",
-                "offer": "WindowsServer",
-                "sku": "2012-R2-Datacenter",
-                "version": "latest"
-              },
-              "dataDisks": {
-                "count": 1,
-                "diskSizeGB": 127,
-                "caching": "None",
-                "createOption": "Empty"
-              }              
+            "vmCount": 2,
+            "namePrefix": "ra-aad-onpremise-ad",
+            "computerNamePrefix": "ad",
+            "size": "Standard_DS3_v2",
+            "osType": "windows",
+            "adminUsername": "testuser",
+            "adminPassword": "AweS0me@PW",
+            "virtualNetwork": {
+              "name": "ra-aad-onpremise-vnet"
+            },
+            "nics": [
+              {
+                "isPublic": true,
+                "publicIPAllocationMethod": "Static",
+                "subnetName": "adds",
+                "privateIPAllocationMethod": "Static",
+                "startingIPAddress": "192.168.0.4"
+              }
+            ],
+            "imageReference": {
+              "publisher": "MicrosoftWindowsServer",
+              "offer": "WindowsServer",
+              "sku": "2012-R2-Datacenter",
+              "version": "latest"
+            },
+            "dataDisks": {
+              "count": 1,
+              "diskSizeGB": 127,
+              "caching": "None",
+              "createOption": "Empty"
             }
+          }
         },
-
-
         {
           "type": "VirtualMachineExtension",
           "settings": [
             {
-              "vms": [ "ra-aad-onpremise-ad-vm1" ],
+              "vms": [
+                "ra-aad-onpremise-ad-vm1"
+              ],
               "extensions": [
                 {
-                    "name": "install-adds-forest",
-                    "publisher": "Microsoft.Powershell",
-                    "type": "DSC",
-                    "typeHandlerVersion": "2.7",
-                    "autoUpgradeMinorVersion": true,
-                    "settings": {
-                         "ModulesUrl": "https://github.com/mspnp/identity-reference-architectures/blob/pabrus/azure-ad-azbb/azure-ad-v2/extensions/azure-ad.zip?raw=true",
-                         "ConfigurationFunction":"create-forest.ps1\\CreateForest",
-                         "Properties": {
-                            "DomainName": "contoso.com",
-                            "DomainNetbiosName": "CONTOSO",
-                            "AdminCreds": {
-                              "UserName": "testuser",
-                              "Password": "PrivateSettingsRef:AdminPassword"
-                            },
-                            "SafeModeAdminCreds": {
-                              "UserName": "testsafeadminuser",
-                              "Password": "PrivateSettingsRef:SafeModeAdminPassword"
-                            }
-                         }
-                    },
-                    "protectedSettings": {
-                        "Items": {
-                            "AdminPassword": "AweS0me@PW",
-                            "SafeModeAdminPassword": "Saf3M0de@PW"
-                        }
+                  "name": "install-adds-forest",
+                  "publisher": "Microsoft.Powershell",
+                  "type": "DSC",
+                  "typeHandlerVersion": "2.7",
+                  "autoUpgradeMinorVersion": true,
+                  "settings": {
+                    "ModulesUrl": "https://github.com/mspnp/identity-reference-architectures/blob/pabrus/azure-ad-azbb/azure-ad-v2/extensions/azure-ad.zip?raw=true",
+                    "ConfigurationFunction": "create-forest.ps1\\CreateForest",
+                    "Properties": {
+                      "DomainName": "contoso.com",
+                      "DomainNetbiosName": "CONTOSO",
+                      "AdminCreds": {
+                        "UserName": "testuser",
+                        "Password": "PrivateSettingsRef:AdminPassword"
+                      },
+                      "SafeModeAdminCreds": {
+                        "UserName": "testsafeadminuser",
+                        "Password": "PrivateSettingsRef:SafeModeAdminPassword"
+                      }
                     }
+                  },
+                  "protectedSettings": {
+                    "Items": {
+                      "AdminPassword": "AweS0me@PW",
+                      "SafeModeAdminPassword": "Saf3M0de@PW"
+                    }
+                  }
                 }
               ]
             }
           ]
         },
-
-
         {
           "type": "VirtualMachineExtension",
-          "settings": [{
-            "vms": [ "ra-aad-onpremise-ad-vm2" ],
-            "extensions": [
-              {
-                "name": "install-adds",
-                "publisher": "Microsoft.Powershell",
-                "type": "DSC",
-                "typeHandlerVersion": "2.7",
-                "autoUpgradeMinorVersion": true,
-                "settings": {
-                  "ModulesUrl": "https://github.com/mspnp/identity-reference-architectures/blob/pabrus/azure-ad-azbb/azure-ad-v2/extensions/azure-ad.zip?raw=true",
-                  "ConfigurationFunction":"add-controller.ps1\\AddController",
-                  "Properties": {
-                     "DomainName": "contoso.com",
-                     "SiteName": "Default-First-Site-Name",
-                     "PrimaryDcIpAddress": "192.168.0.4",
-                     "AdminCreds": {
-                       "UserName": "testuser",
-                       "Password": "PrivateSettingsRef:AdminPassword"
-                     },
-                     "SafeModeAdminCreds": {
-                       "UserName": "testsafeadminuser",
-                       "Password": "PrivateSettingsRef:SafeModeAdminPassword"
-                     }
-                  }
-                },
-                "protectedSettings": {
-                    "Items": {
-                        "AdminPassword": "AweS0me@PW",
-                        "SafeModeAdminPassword": "Saf3M0de@PW"
+          "settings": [
+            {
+              "vms": [
+                "ra-aad-onpremise-ad-vm2"
+              ],
+              "extensions": [
+                {
+                  "name": "install-adds",
+                  "publisher": "Microsoft.Powershell",
+                  "type": "DSC",
+                  "typeHandlerVersion": "2.7",
+                  "autoUpgradeMinorVersion": true,
+                  "settings": {
+                    "ModulesUrl": "https://github.com/mspnp/identity-reference-architectures/blob/pabrus/azure-ad-azbb/azure-ad-v2/extensions/azure-ad.zip?raw=true",
+                    "ConfigurationFunction": "add-controller.ps1\\AddController",
+                    "Properties": {
+                      "DomainName": "contoso.com",
+                      "SiteName": "Default-First-Site-Name",
+                      "PrimaryDcIpAddress": "192.168.0.4",
+                      "AdminCreds": {
+                        "UserName": "testuser",
+                        "Password": "PrivateSettingsRef:AdminPassword"
+                      },
+                      "SafeModeAdminCreds": {
+                        "UserName": "testsafeadminuser",
+                        "Password": "PrivateSettingsRef:SafeModeAdminPassword"
+                      }
                     }
+                  },
+                  "protectedSettings": {
+                    "Items": {
+                      "AdminPassword": "AweS0me@PW",
+                      "SafeModeAdminPassword": "Saf3M0de@PW"
+                    }
+                  }
                 }
-              }
-            ]
-          }]
+              ]
+            }
+          ]
         },
-
-
         {
           "type": "VirtualMachineExtension",
-          "settings": [{
-            "vms": [ "ra-aad-onpremise-adc-vm1", "ra-aad-onpremise-adc-vm2" ],
-            "extensions": [
-              {
-                "name": "install-adds",
-                "publisher": "Microsoft.Powershell",
-                "type": "DSC",
-                "typeHandlerVersion": "2.7",
-                "autoUpgradeMinorVersion": true,
-                "settings": {
-                  "ModulesUrl": "https://github.com/mspnp/identity-reference-architectures/blob/pabrus/azure-ad-azbb/azure-ad-v2/extensions/azure-ad.zip?raw=true",
-                  "ConfigurationFunction":"join-ad.ps1\\JoinAD",
-                  "Properties": {
-                     "DomainName": "contoso.com",
-                     "Credentials": {
-                       "UserName": "testuser",
-                       "Password": "PrivateSettingsRef:Password"
-                     }
-                  }
-                },
-                "protectedSettings": {
-                    "Items": {
-                        "Password": "AweS0me@PW"
+          "settings": [
+            {
+              "vms": [
+                "ra-aad-onpremise-adc-vm1",
+                "ra-aad-onpremise-adc-vm2"
+              ],
+              "extensions": [
+                {
+                  "name": "install-adds",
+                  "publisher": "Microsoft.Powershell",
+                  "type": "DSC",
+                  "typeHandlerVersion": "2.7",
+                  "autoUpgradeMinorVersion": true,
+                  "settings": {
+                    "ModulesUrl": "https://github.com/mspnp/identity-reference-architectures/blob/pabrus/azure-ad-azbb/azure-ad-v2/extensions/azure-ad.zip?raw=true",
+                    "ConfigurationFunction": "join-ad.ps1\\JoinAD",
+                    "Properties": {
+                      "DomainName": "contoso.com",
+                      "Credentials": {
+                        "UserName": "testuser",
+                        "Password": "PrivateSettingsRef:Password"
+                      }
                     }
+                  },
+                  "protectedSettings": {
+                    "Items": {
+                      "Password": "AweS0me@PW"
+                    }
+                  }
                 }
-              }
-            ]
-          }]
+              ]
+            }
+          ]
         },
-
-
         {
           "type": "VirtualNetwork",
           "settings": [
@@ -272,7 +272,6 @@
             }
           ]
         }
-        
       ]
     }
   }
