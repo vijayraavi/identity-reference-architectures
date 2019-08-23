@@ -221,3 +221,7 @@ ModelManifest.xml
 **/ntier-windows-output-*.json
 **/ntier-windows-script.ps1
 **/ntier-windows-script.sh
+
+**/ntier-linux-output-*.json
+**/ntier-linux-script.ps1
+**/ntier-linux-script.sh

@@ -1,0 +1,610 @@
+{
+  "$schema": "https://raw.githubusercontent.com/mspnp/template-building-blocks/master/schemas/buildingBlocks.json",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "buildingBlocks": {
+      "value": [
+        {
+          "type": "VirtualNetwork",
+          "settings": [
+            {
+              "name": "ra-aad-ntier-vnet",
+              "addressPrefixes": [
+                "10.0.0.0/16"
+              ],
+              "subnets": [
+                {
+                  "name": "web",
+                  "addressPrefix": "10.0.1.0/24"
+                },
+                {
+                  "name": "biz",
+                  "addressPrefix": "10.0.2.0/24"
+                },
+                {
+                  "name": "data",
+                  "addressPrefix": "10.0.3.0/24"
+                },
+                {
+                  "name": "mgmt",
+                  "addressPrefix": "10.0.0.128/25"
+                }
+              ],
+              "dnsServers": []
+            }
+          ]
+        },
+        {
+          "type": "LoadBalancer",
+          "settings": [
+            {
+              "name": "ra-aad-ntier-web-lb",
+              "virtualNetwork": {
+                "name": "ra-aad-ntier-vnet"
+              },
+              "frontendIPConfigurations": [
+                {
+                  "name": "ra-aad-ntier-web-lb-fe-config1",
+                  "loadBalancerType": "Public"
+                }
+              ],
+              "loadBalancingRules": [
+                {
+                  "name": "web-lbr1",
+                  "frontendPort": 80,
+                  "backendPort": 80,
+                  "protocol": "Tcp",
+                  "backendPoolName": "web-lb-bep1",
+                  "frontendIPConfigurationName": "ra-aad-ntier-web-lb-fe-config1",
+                  "enableFloatingIP": false,
+                  "probeName": "web-lbp1"
+                },
+                {
+                  "name": "web-lbr2",
+                  "frontendPort": 443,
+                  "backendPort": 443,
+                  "protocol": "Tcp",
+                  "backendPoolName": "web-lb-bep1",
+                  "frontendIPConfigurationName": "ra-aad-ntier-web-lb-fe-config1",
+                  "enableFloatingIP": false,
+                  "probeName": "web-lbp2"
+                }
+              ],
+              "probes": [
+                {
+                  "name": "web-lbp1",
+                  "port": 80,
+                  "protocol": "Http",
+                  "requestPath": "/"
+                },
+                {
+                  "name": "web-lbp2",
+                  "port": 443,
+                  "protocol": "Tcp",
+                  "requestPath": null
+                }
+              ],
+              "backendPools": [
+                {
+                  "name": "web-lb-bep1",
+                  "nicIndex": 0
+                }
+              ],
+              "inboundNatRules": []
+            }
+          ]
+        },
+        {
+          "type": "VirtualMachine",
+          "settings": {
+            "vmCount": 3,
+            "namePrefix": "ra-aad-ntier-web",
+            "computerNamePrefix": "cn",
+            "size": "Standard_DS1_v2",
+            "adminUsername": "testuser",
+            "adminPassword": "AweS0me@PW",
+            "osType": "linux",
+            "virtualNetwork": {
+              "name": "ra-aad-ntier-vnet"
+            },
+            "nics": [
+              {
+                "subnetName": "web",
+                "privateIPAllocationMethod": "Dynamic",
+                "backendPoolNames": [
+                  {
+                    "name": "web-lb-bep1",
+                    "loadBalancerName": "ra-aad-ntier-web-lb"
+                  }
+                ]
+              }
+            ],
+            "imageReference": {
+              "publisher": "Canonical",
+              "offer": "UbuntuServer",
+              "sku": "14.04.5-LTS",
+              "version": "latest"
+            },
+            "dataDisks": {
+              "count": 1,
+              "diskSizeGB": 127,
+              "caching": "None",
+              "createOption": "Empty"
+            }
+          }
+        },
+        {
+          "type": "VirtualMachineExtension",
+          "settings": [
+            {
+              "vms": [
+                "ra-aad-ntier-web-vm1",
+                "ra-aad-ntier-web-vm2",
+                "ra-aad-ntier-web-vm3"
+              ],
+              "extensions": [
+                {
+                  "name": "apache-config-ext",
+                  "publisher": "Microsoft.Azure.Extensions",
+                  "type": "CustomScript",
+                  "typeHandlerVersion": "2.0",
+                  "autoUpgradeMinorVersion": true,
+                  "settings": {
+                    "fileUris": [
+                      "https://github.com/mspnp/identity-reference-architectures/blob/pabrus/azure-ad-azbb/azure-ad/extensions/linux/install-apache.sh?raw=true"
+                    ]
+                  },
+                  "protectedSettings": {
+                    "commandToExecute": "sudo sh install-apache.sh"
+                  }
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "LoadBalancer",
+          "settings": [
+            {
+              "name": "ra-aad-ntier-biz-lb",
+              "virtualNetwork": {
+                "name": "ra-aad-ntier-vnet"
+              },
+              "frontendIPConfigurations": [
+                {
+                  "name": "ra-aad-ntier-biz-lb-fe-config1",
+                  "loadBalancerType": "Internal",
+                  "internalLoadBalancerSettings": {
+                    "privateIPAddress": "10.0.2.250",
+                    "subnetName": "biz"
+                  }
+                }
+              ],
+              "loadBalancingRules": [
+                {
+                  "name": "biz-lbr1",
+                  "frontendPort": 80,
+                  "backendPort": 80,
+                  "protocol": "Tcp",
+                  "backendPoolName": "biz-lb-bep1",
+                  "frontendIPConfigurationName": "ra-aad-ntier-biz-lb-fe-config1",
+                  "enableFloatingIP": false,
+                  "probeName": "biz-lbp1"
+                }
+              ],
+              "probes": [
+                {
+                  "name": "biz-lbp1",
+                  "port": 80,
+                  "protocol": "Http",
+                  "requestPath": "/"
+                }
+              ],
+              "backendPools": [
+                {
+                  "name": "biz-lb-bep1",
+                  "nicIndex": 0
+                }
+              ],
+              "inboundNatRules": []
+            }
+          ]
+        },
+        {
+          "type": "VirtualMachine",
+          "settings": {
+            "vmCount": 3,
+            "namePrefix": "ra-aad-ntier-biz",
+            "computerNamePrefix": "cn",
+            "size": "Standard_DS1_v2",
+            "adminUsername": "testuser",
+            "adminPassword": "AweS0me@PW",
+            "osType": "linux",
+            "virtualNetwork": {
+              "name": "ra-aad-ntier-vnet"
+            },
+            "nics": [
+              {
+                "subnetName": "biz",
+                "privateIPAllocationMethod": "Dynamic",
+                "backendPoolNames": [
+                  {
+                    "name": "biz-lb-bep1",
+                    "loadBalancerName": "ra-aad-ntier-biz-lb"
+                  }
+                ]
+              }
+            ],
+            "imageReference": {
+              "publisher": "Canonical",
+              "offer": "UbuntuServer",
+              "sku": "14.04.5-LTS",
+              "version": "latest"
+            },
+            "dataDisks": {
+              "count": 1,
+              "diskSizeGB": 127,
+              "caching": "None",
+              "createOption": "Empty"
+            }
+          }
+        },
+        {
+          "type": "LoadBalancer",
+          "settings": [
+            {
+              "name": "ra-aad-ntier-data-lb",
+              "virtualNetwork": {
+                "name": "ra-aad-ntier-vnet"
+              },
+              "frontendIPConfigurations": [
+                {
+                  "name": "ra-aad-ntier-data-lb-fe-config1",
+                  "loadBalancerType": "Internal",
+                  "internalLoadBalancerSettings": {
+                    "privateIPAddress": "10.0.3.250",
+                    "subnetName": "data"
+                  }
+                }
+              ],
+              "loadBalancingRules": [
+                {
+                  "name": "data-lbr1",
+                  "frontendPort": 80,
+                  "backendPort": 80,
+                  "protocol": "Tcp",
+                  "backendPoolName": "data-lb-bep1",
+                  "frontendIPConfigurationName": "ra-aad-ntier-data-lb-fe-config1",
+                  "enableFloatingIP": false,
+                  "probeName": "data-lbp1"
+                }
+              ],
+              "probes": [
+                {
+                  "name": "data-lbp1",
+                  "port": 80,
+                  "protocol": "Http",
+                  "requestPath": "/"
+                }
+              ],
+              "backendPools": [
+                {
+                  "name": "data-lb-bep1",
+                  "nicIndex": 0
+                }
+              ],
+              "inboundNatRules": []
+            }
+          ]
+        },
+        {
+          "type": "VirtualMachine",
+          "settings": {
+            "vmCount": 3,
+            "namePrefix": "ra-aad-ntier-data",
+            "computerNamePrefix": "cn",
+            "size": "Standard_DS1_v2",
+            "adminUsername": "testuser",
+            "adminPassword": "AweS0me@PW",
+            "osType": "linux",
+            "virtualNetwork": {
+              "name": "ra-aad-ntier-vnet"
+            },
+            "nics": [
+              {
+                "subnetName": "data",
+                "privateIPAllocationMethod": "Dynamic",
+                "backendPoolNames": [
+                  {
+                    "name": "data-lb-bep1",
+                    "loadBalancerName": "ra-aad-ntier-data-lb"
+                  }
+                ]
+              }
+            ],
+            "imageReference": {
+              "publisher": "Canonical",
+              "offer": "UbuntuServer",
+              "sku": "14.04.5-LTS",
+              "version": "latest"
+            },
+            "dataDisks": {
+              "count": 1,
+              "diskSizeGB": 127,
+              "caching": "None",
+              "createOption": "Empty"
+            }
+          }
+        },
+        {
+          "type": "VirtualMachine",
+          "settings": {
+            "vmCount": 1,
+            "namePrefix": "ra-aad-ntier-mgmt",
+            "computerNamePrefix": "cn",
+            "size": "Standard_DS1_v2",
+            "adminUsername": "testuser",
+            "adminPassword": "AweS0me@PW",
+            "osType": "linux",
+            "virtualNetwork": {
+              "name": "ra-aad-ntier-vnet"
+            },
+            "nics": [
+              {
+                "isPublic": true,
+                "publicIPAllocationMethod": "Static",
+                "subnetName": "mgmt",
+                "privateIPAllocationMethod": "Dynamic"
+              }
+            ],
+            "imageReference": {
+              "publisher": "Canonical",
+              "offer": "UbuntuServer",
+              "sku": "14.04.5-LTS",
+              "version": "latest"
+            },
+            "dataDisks": {
+              "count": 1,
+              "diskSizeGB": 127,
+              "caching": "None",
+              "createOption": "Empty"
+            }
+          }
+        },
+        {
+          "type": "NetworkSecurityGroup",
+          "settings": [
+            {
+              "name": "ra-aad-ntier-biz-nsg",
+              "virtualNetworks": [
+                {
+                  "name": "ra-aad-ntier-vnet",
+                  "subnets": [
+                    "biz"
+                  ]
+                }
+              ],
+              "securityRules": [
+                {
+                  "name": "allow-web-traffic",
+                  "description": "Allow traffic originating from web layer.",
+                  "protocol": "*",
+                  "sourcePortRange": "*",
+                  "destinationPortRange": 80,
+                  "sourceAddressPrefix": "10.0.1.0/24",
+                  "destinationAddressPrefix": "*",
+                  "access": "Allow",
+                  "priority": 100,
+                  "direction": "Inbound"
+                },
+                {
+                  "name": "allow-mgmt-ssh",
+                  "direction": "Inbound",
+                  "priority": 110,
+                  "sourceAddressPrefix": "10.0.0.128/25",
+                  "destinationAddressPrefix": "*",
+                  "sourcePortRange": "*",
+                  "destinationPortRange": 22,
+                  "access": "Allow",
+                  "protocol": "TCP"
+                },
+                {
+                  "name": "deny-other-traffic",
+                  "description": "Deny all other traffic",
+                  "protocol": "*",
+                  "sourcePortRange": "*",
+                  "destinationPortRange": "*",
+                  "sourceAddressPrefix": "*",
+                  "destinationAddressPrefix": "*",
+                  "access": "Deny",
+                  "priority": 120,
+                  "direction": "Inbound"
+                }
+              ]
+            },
+            {
+              "name": "ra-aad-ntier-data-nsg",
+              "virtualNetworks": [
+                {
+                  "name": "ra-aad-ntier-vnet",
+                  "subnets": [
+                    "data"
+                  ]
+                }
+              ],
+              "securityRules": [
+                {
+                  "name": "allow-biz-traffic",
+                  "description": "Allow traffic originating from biz layer.",
+                  "protocol": "*",
+                  "sourcePortRange": "*",
+                  "destinationPortRange": 9042,
+                  "sourceAddressPrefix": "10.0.2.0/24",
+                  "destinationAddressPrefix": "*",
+                  "access": "Allow",
+                  "priority": 100,
+                  "direction": "Inbound"
+                },
+                {
+                  "name": "allow-mgmt-ssh",
+                  "direction": "Inbound",
+                  "priority": 110,
+                  "sourceAddressPrefix": "10.0.0.128/25",
+                  "destinationAddressPrefix": "*",
+                  "sourcePortRange": "*",
+                  "destinationPortRange": 22,
+                  "access": "Allow",
+                  "protocol": "TCP"
+                },
+                {
+                  "name": "allow-ops-center-web-traffic",
+                  "description": "Allow web traffic to ops center.",
+                  "protocol": "*",
+                  "sourcePortRange": "*",
+                  "destinationPortRange": 8888,
+                  "sourceAddressPrefix": "*",
+                  "destinationAddressPrefix": "*",
+                  "access": "Allow",
+                  "priority": 120,
+                  "direction": "Inbound"
+                },
+                {
+                  "name": "deny-other-traffic",
+                  "description": "Deny all other traffic",
+                  "protocol": "*",
+                  "sourcePortRange": "*",
+                  "destinationPortRange": "*",
+                  "sourceAddressPrefix": "*",
+                  "destinationAddressPrefix": "*",
+                  "access": "Deny",
+                  "priority": 130,
+                  "direction": "Inbound"
+                }
+              ]
+            },
+            {
+              "name": "ra-aad-ntier-web-nsg",
+              "virtualNetworks": [
+                {
+                  "name": "ra-aad-ntier-vnet",
+                  "subnets": [
+                    "web"
+                  ]
+                }
+              ],
+              "securityRules": [
+                {
+                  "name": "allow-http-traffic-from-external",
+                  "description": "Allow http traffic originating externally.",
+                  "protocol": "*",
+                  "sourcePortRange": "*",
+                  "destinationPortRange": 80,
+                  "sourceAddressPrefix": "*",
+                  "destinationAddressPrefix": "*",
+                  "access": "Allow",
+                  "priority": 100,
+                  "direction": "Inbound"
+                },
+                {
+                  "name": "allow-https-traffic-from-external",
+                  "description": "Allow https traffic originating externally.",
+                  "protocol": "*",
+                  "sourcePortRange": "*",
+                  "destinationPortRange": 443,
+                  "sourceAddressPrefix": "*",
+                  "destinationAddressPrefix": "*",
+                  "access": "Allow",
+                  "priority": 110,
+                  "direction": "Inbound"
+                },
+                {
+                  "name": "allow-http-traffic-from-vnet",
+                  "description": "Allow http traffic originating from vnet.",
+                  "protocol": "*",
+                  "sourcePortRange": "*",
+                  "destinationPortRange": 80,
+                  "sourceAddressPrefix": "10.0.0.0/16",
+                  "destinationAddressPrefix": "*",
+                  "access": "Allow",
+                  "priority": 120,
+                  "direction": "Inbound"
+                },
+                {
+                  "name": "allow-https-traffic-from-vnet",
+                  "description": "Allow https traffic originating from vnet.",
+                  "protocol": "*",
+                  "sourcePortRange": "*",
+                  "destinationPortRange": 443,
+                  "sourceAddressPrefix": "10.0.0.0/16",
+                  "destinationAddressPrefix": "*",
+                  "access": "Allow",
+                  "priority": 130,
+                  "direction": "Inbound"
+                },
+                {
+                  "name": "allow-mgmt-ssh",
+                  "direction": "Inbound",
+                  "priority": 140,
+                  "sourceAddressPrefix": "10.0.0.128/25",
+                  "destinationAddressPrefix": "*",
+                  "sourcePortRange": "*",
+                  "destinationPortRange": 22,
+                  "access": "Allow",
+                  "protocol": "TCP"
+                },
+                {
+                  "name": "deny-other-traffic",
+                  "description": "Deny all other traffic",
+                  "protocol": "*",
+                  "sourcePortRange": "*",
+                  "destinationPortRange": "*",
+                  "sourceAddressPrefix": "*",
+                  "destinationAddressPrefix": "*",
+                  "access": "Deny",
+                  "priority": 150,
+                  "direction": "Inbound"
+                }
+              ]
+            },
+            {
+              "name": "ra-aad-ntier-mgmt-nsg",
+              "virtualNetworks": [
+                {
+                  "name": "ra-aad-ntier-vnet",
+                  "subnets": [
+                    "mgmt"
+                  ]
+                }
+              ],
+              "securityRules": [
+                {
+                  "name": "default-allow-ssh",
+                  "direction": "Inbound",
+                  "priority": 100,
+                  "sourceAddressPrefix": "*",
+                  "destinationAddressPrefix": "*",
+                  "sourcePortRange": "*",
+                  "destinationPortRange": 22,
+                  "access": "Allow",
+                  "protocol": "TCP"
+                },
+                {
+                  "name": "deny-other-traffic",
+                  "description": "Deny all other traffic",
+                  "protocol": "*",
+                  "sourcePortRange": "*",
+                  "destinationPortRange": "*",
+                  "sourceAddressPrefix": "*",
+                  "destinationAddressPrefix": "*",
+                  "access": "Deny",
+                  "priority": 110,
+                  "direction": "Inbound"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  }
+}

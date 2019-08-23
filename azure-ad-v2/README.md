@@ -40,6 +40,20 @@ A deployment for a reference architecture that implements these recommendations 
     azbb -s <subscription_id> -g <resource group> -l <location> -p onprem.json --deploy
     ```
 
+### Deploy the Azure N-Tier VNet
+
+The reference architecture can be deployed with either with Windows or Linux VMs. Steps are the same for boths, but for Linux you need use `ntier-linux.json` instead of `ntier-windows.json`.
+
+1. Navigate to the `azure-ad` folder of the GitHub repository.
+
+2. Open the `ntier-windows.json` file. Search for instances of `AdminPassword`, `SafeModeAdminPassword` and `Password` and change values for the passwords.
+
+3. Run the following command and wait for the deployment to finish:
+
+    ```bash
+    azbb -s <subscription_id> -g <resource group> -l <location> -p ntier-windows.json --deploy
+    ```
+
 <!-- links -->
 [github]: https://github.com/mspnp/identity-reference-architectures/tree/master/azure-ad
 
