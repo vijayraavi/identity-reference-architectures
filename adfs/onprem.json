@@ -166,7 +166,7 @@
                       "typeHandlerVersion": "2.7",
                       "autoUpgradeMinorVersion": true,
                       "settings": {
-                           "ModulesUrl": "https://github.com/woodp/reference-architectures/blob/ad-forest-dsc/identity/adds-extend-domain-v2/adds.zip?raw=true",
+                           "ModulesUrl": "https://github.com/mspnp/identity-reference-architectures/raw/master/adds-extend-domain/adds.zip",
                            "ConfigurationFunction":"onprem-primary.ps1\\CreateForest",
                            "Properties": {
                                 "DomainName": "contoso.com",
@@ -211,7 +211,7 @@
                       "typeHandlerVersion": "2.7",
                       "autoUpgradeMinorVersion": true,
                       "settings": {
-                           "ModulesUrl": "https://github.com/woodp/reference-architectures/blob/ad-forest-dsc/identity/adds-extend-domain-v2/adds.zip?raw=true",
+                           "ModulesUrl": "https://github.com/mspnp/identity-reference-architectures/raw/master/adds-extend-domain/adds.zip",
                            "ConfigurationFunction":"onprem-secondary.ps1\\CreateDomainController",
                            "Properties": {
                                 "DomainName": "contoso.com",

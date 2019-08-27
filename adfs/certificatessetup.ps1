@@ -23,7 +23,7 @@ Configuration Certificates
             SetScript = 
             { 
                 $webClient = New-Object System.Net.WebClient 
-                $uri = New-Object System.Uri "https://raw.githubusercontent.com/mspnp/identity-reference-architectures/master/adfs/adfs-certs.zip" 
+                $uri = New-Object System.Uri "https://github.com/mspnp/identity-reference-architectures/raw/master/adfs/adfs-certs.zip" 
                 $webClient.DownloadFile($uri, "C:\TempDSCAssets\adfs-certs.zip") 
             } 
             TestScript = { Test-Path "C:\TempDSCAssets\adfs-certs.zip" } 

@@ -139,7 +139,7 @@
                   "typeHandlerVersion": "2.7",
                   "autoUpgradeMinorVersion": true,
                   "settings": {
-                    "ModulesUrl": "https://github.com/mspnp/identity-reference-architectures/blob/pabrus/azure-ad-azbb/azure-ad-v2/extensions/azure-ad.zip?raw=true",
+                    "ModulesUrl": "https://github.com/mspnp/identity-reference-architectures/raw/master/azure-ad/extensions/azure-ad.zip",
                     "ConfigurationFunction": "create-forest.ps1\\CreateForest",
                     "Properties": {
                       "DomainName": "contoso.com",
@@ -180,7 +180,7 @@
                   "typeHandlerVersion": "2.7",
                   "autoUpgradeMinorVersion": true,
                   "settings": {
-                    "ModulesUrl": "https://github.com/mspnp/identity-reference-architectures/blob/pabrus/azure-ad-azbb/azure-ad-v2/extensions/azure-ad.zip?raw=true",
+                    "ModulesUrl": "https://github.com/mspnp/identity-reference-architectures/raw/azure-ad/extensions/azure-ad.zip",
                     "ConfigurationFunction": "add-controller.ps1\\AddController",
                     "Properties": {
                       "DomainName": "contoso.com",
@@ -223,7 +223,7 @@
                   "typeHandlerVersion": "2.7",
                   "autoUpgradeMinorVersion": true,
                   "settings": {
-                    "ModulesUrl": "https://github.com/mspnp/identity-reference-architectures/blob/pabrus/azure-ad-azbb/azure-ad-v2/extensions/azure-ad.zip?raw=true",
+                    "ModulesUrl": "https://github.com/mspnp/identity-reference-architectures/raw/master/azure-ad/extensions/azure-ad.zip",
                     "ConfigurationFunction": "join-ad.ps1\\JoinAD",
                     "Properties": {
                       "DomainName": "contoso.com",
