@@ -8,15 +8,52 @@ For guidance about best practices, see the article [Integrate on-premises Active
 
 ## Deploy the solution
 
-A deployment for a reference architecture that implements these recommendations and considerations is available on GitHub. This reference architecture deploys a simulated on-premises network in Azure that you can use to test and experiment. The reference architecture can be deployed with either with Windows or Linux VMs by following the directions below: 
+A deployment for a reference architecture that implements these recommendations and considerations is available on [GitHub][github]. This reference architecture deploys a simulated on-premises network in Azure that you can use to test and experiment. The reference architecture can be deployed with either with Windows or Linux VMs by following the directions below.
 
-1. Click the button below:<br><a href="https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2Fmspnp%2Freference-architectures%2Fmaster%2Fidentity%2Fazure-ad%2Fazuredeploy.json" target="_blank"><img src="https://azuredeploy.net/deploybutton.png"/></a>
-2. Once the link has opened in the Azure portal, you must enter values for some of the settings: 
-   * The **Resource group** name is already defined in the parameter file, so select **Create New** and enter `ra-aad-onpremise-rg` in the text box.
-   * Select the region from the **Location** drop down box.
-   * Do not edit the **Template Root Uri** or the **Parameter Root Uri** text boxes.
-   * Select **windows** or **linux** in the **Os Type** the drop down box.
-   * Review the terms and conditions, then click the **I agree to the terms and conditions stated above** checkbox.
-   * Click the **Purchase** button.
-3. Wait for the deployment to complete.
-4. The parameter files include a hard-coded administrator user names and passwords, and it is strongly recommended that you immediately change both on all the VMs. Click each VM in the Azure Portal then click on **Reset password** in the **Support + troubleshooting** blade. Select **Reset password** in the **Mode** drop down box, then select a new **User name** and **Password**. Click the **Update** button to persist the new user name and password.
+### Prerequisites
+
+1. Clone, fork, or download the zip file for the [identity reference architectures](https://github.com/mspnp/identity-reference-architectures) GitHub repository.
+
+2. Install [Azure CLI](/cli/azure/install-azure-cli?view=azure-cli-latest).
+
+3. Install the [Azure building blocks](https://github.com/mspnp/template-building-blocks/wiki/Install-Azure-Building-Blocks) npm package.
+
+   ```bash
+   npm install -g @mspnp/azure-building-blocks
+   ```
+
+4. From a command prompt, bash prompt, or PowerShell prompt, sign into your Azure account as follows:
+
+   ```bash
+   az login
+   ```
+
+### Deploy the simulated on-premises datacenter
+
+1. Navigate to the `azure-ad` folder of the GitHub repository.
+
+2. Open the `onprem.json` file. Search for instances of `AdminPassword`, `SafeModeAdminPassword` and `Password` and change values for the passwords.
+
+3. Run the following command and wait for the deployment to finish:
+
+    ```bash
+    azbb -s <subscription_id> -g <resource group> -l <location> -p onprem.json --deploy
+    ```
+
+### Deploy the Azure N-Tier VNet
+
+The reference architecture can be deployed with either with Windows or Linux VMs. Steps are the same for boths, but for Linux you need use `ntier-linux.json` instead of `ntier-windows.json`.
+
+1. Navigate to the `azure-ad` folder of the GitHub repository.
+
+2. Open the `ntier-windows.json` file. Search for instances of `AdminPassword`, `SafeModeAdminPassword` and `Password` and change values for the passwords.
+
+3. Run the following command and wait for the deployment to finish:
+
+    ```bash
+    azbb -s <subscription_id> -g <resource group> -l <location> -p ntier-windows.json --deploy
+    ```
+
+<!-- links -->
+[github]: https://github.com/mspnp/identity-reference-architectures/tree/master/azure-ad
+

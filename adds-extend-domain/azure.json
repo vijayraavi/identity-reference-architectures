@@ -130,7 +130,7 @@
                 "settings": {
                       "configuration": 
                       {
-                      "url": "https://github.com/mspnp/reference-architectures/raw/master/identity/adds-extend-domain/adds.zip",
+                      "url": "https://github.com/mspnp/identity-reference-architectures/raw/master/adds-extend-domain/adds.zip",
                       "script":"azure.ps1",
                       "function": "CreateDomainController"
                       }
@@ -201,7 +201,7 @@
                 "autoUpgradeMinorVersion": true,
                 "settings": {
                   "configuration": {
-                    "url": "https://github.com/mspnp/reference-architectures/raw/master/identity/adds-extend-domain/adds.zip",
+                    "url": "https://github.com/mspnp/identity-reference-architectures/raw/master/adds-extend-domain/adds.zip",
                     "script": "config.ps1",
                     "function": "Config"
                   }

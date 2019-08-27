@@ -12,7 +12,7 @@ A deployment for this architecture is available on [GitHub][github]. Note that t
 
 ### Prerequisites
 
-1. Clone, fork, or download the zip file for the [reference architectures](https://github.com/mspnp/reference-architectures) GitHub repository.
+1. Clone, fork, or download the zip file for the [reference architectures](https://github.com/mspnp/identity-reference-architectures) GitHub repository.
 
 2. Install [Azure CLI 2.0](/cli/azure/install-azure-cli?view=azure-cli-latest).
 
@@ -78,4 +78,4 @@ A deployment for this architecture is available on [GitHub][github]. Note that t
 ![](../images/ad-forest-trust.png)
 
 <!-- links -->
-[github]: https://github.com/mspnp/reference-architectures/tree/master/identity/adds-forest
+[github]: https://github.com/mspnp/identity-reference-architectures/tree/master/adds-forest

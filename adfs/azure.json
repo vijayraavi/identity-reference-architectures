@@ -49,7 +49,7 @@
                   "typeHandlerVersion": "2.7",
                   "autoUpgradeMinorVersion": true,
                   "settings": {
-                       "ModulesUrl": "https://raw.githubusercontent.com/mspnp/identity-reference-architectures/master/adfs/adfs-v2.zip",
+                       "ModulesUrl": "https://github.com/mspnp/identity-reference-architectures/raw/master/adfs/adfs.zip",
                        "ConfigurationFunction":"azure.ps1\\CreateDomainController",
                        "Properties": {
                             "DomainName": "contoso.com",
@@ -345,7 +345,7 @@
                     "autoUpgradeMinorVersion": true,
                     "settings": {
                       "configuration": {
-                        "url": "https://raw.githubusercontent.com/mspnp/identity-reference-architectures/master/adfs/adfs-v2.zip",
+                        "url": "https://github.com/mspnp/identity-reference-architectures/raw/master/adfs/adfs.zip",
                         "script": "certificatessetup.ps1",
                         "function": "Certificates"
                       }
