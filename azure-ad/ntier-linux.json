@@ -151,7 +151,7 @@
                   "autoUpgradeMinorVersion": true,
                   "settings": {
                     "fileUris": [
-                      "https://github.com/mspnp/identity-reference-architectures/raw/master/azure-ad/extensions/linux/install-apache.sh"
+                      "https://github.com/mspnp/identity-reference-architectures/raw/master/azure-ad/extensions/install-apache.sh"
                     ]
                   },
                   "protectedSettings": {
