@@ -150,7 +150,7 @@
                   "typeHandlerVersion": "2.7",
                   "autoUpgradeMinorVersion": true,
                   "settings": {
-                    "ModulesUrl": "https://github.com/mspnp/identity-reference-architectures/raw/master/azure-ad/extensions/windows/iisaspnet.ps1.zip",
+                    "ModulesUrl": "https://github.com/mspnp/identity-reference-architectures/raw/master/azure-ad/extensions/iisaspnet.ps1.zip",
                     "ConfigurationFunction": "iisaspnet.ps1\\iisaspnet"
                   },
                   "protectedSettings": {}
