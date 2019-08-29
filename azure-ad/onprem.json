@@ -31,28 +31,6 @@
           ]
         },
         {
-          "type": "NetworkSecurityGroup",
-          "settings": [
-            {
-              "name": "ra-aad-onpremise-nsg",
-              "securityRules": [
-                {
-                  "name": "RDP"
-                }
-              ],
-              "virtualNetworks": [
-                {
-                  "name": "ra-aad-onpremise-vnet",
-                  "subnets": [
-                    "adds",
-                    "adc"
-                  ]
-                }
-              ]
-            }
-          ]
-        },
-        {
           "type": "VirtualMachine",
           "settings": {
             "vmCount": 3,
@@ -61,7 +39,7 @@
             "size": "Standard_DS3_v2",
             "osType": "windows",
             "adminUsername": "testuser",
-            "adminPassword": "AweS0me@PW",
+            "adminPassword": "<placeholder>",
             "virtualNetwork": {
               "name": "ra-aad-onpremise-vnet"
             },
@@ -97,7 +75,7 @@
             "size": "Standard_DS3_v2",
             "osType": "windows",
             "adminUsername": "testuser",
-            "adminPassword": "AweS0me@PW",
+            "adminPassword": "<placeholder>",
             "virtualNetwork": {
               "name": "ra-aad-onpremise-vnet"
             },
@@ -156,8 +134,8 @@
                   },
                   "protectedSettings": {
                     "Items": {
-                      "AdminPassword": "AweS0me@PW",
-                      "SafeModeAdminPassword": "Saf3M0de@PW"
+                      "AdminPassword": "<placeholder>",
+                      "SafeModeAdminPassword": "<placeholder>"
                     }
                   }
                 }
@@ -180,7 +158,7 @@
                   "typeHandlerVersion": "2.7",
                   "autoUpgradeMinorVersion": true,
                   "settings": {
-                    "ModulesUrl": "https://github.com/mspnp/identity-reference-architectures/raw/azure-ad/extensions/azure-ad.zip",
+                    "ModulesUrl": "https://github.com/mspnp/identity-reference-architectures/raw/master/azure-ad/extensions/azure-ad.zip",
                     "ConfigurationFunction": "add-controller.ps1\\AddController",
                     "Properties": {
                       "DomainName": "contoso.com",
@@ -198,8 +176,8 @@
                   },
                   "protectedSettings": {
                     "Items": {
-                      "AdminPassword": "AweS0me@PW",
-                      "SafeModeAdminPassword": "Saf3M0de@PW"
+                      "AdminPassword": "<placeholder>",
+                      "SafeModeAdminPassword": "<placeholder>"
                     }
                   }
                 }
@@ -235,7 +213,7 @@
                   },
                   "protectedSettings": {
                     "Items": {
-                      "Password": "AweS0me@PW"
+                      "Password": "<placeholder>"
                     }
                   }
                 }
@@ -268,6 +246,28 @@
               "dnsServers": [
                 "192.168.0.4",
                 "192.168.0.5"
+              ]
+            }
+          ]
+        },
+        {
+          "type": "NetworkSecurityGroup",
+          "settings": [
+            {
+              "name": "ra-aad-onpremise-nsg",
+              "securityRules": [
+                {
+                  "name": "RDP"
+                }
+              ],
+              "virtualNetworks": [
+                {
+                  "name": "ra-aad-onpremise-vnet",
+                  "subnets": [
+                    "adds",
+                    "adc"
+                  ]
+                }
               ]
             }
           ]
