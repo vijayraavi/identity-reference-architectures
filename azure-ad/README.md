@@ -14,7 +14,7 @@ A deployment for a reference architecture that implements these recommendations 
 
 1. Clone, fork, or download the zip file for the [identity reference architectures](https://github.com/mspnp/identity-reference-architectures) GitHub repository.
 
-2. Install [Azure CLI](/cli/azure/install-azure-cli?view=azure-cli-latest).
+2. Install [Azure CLI](https://docs.microsoft.com/en-us/cli/azure/install-azure-cli?view=azure-cli-latest).
 
 3. Install the [Azure building blocks](https://github.com/mspnp/template-building-blocks/wiki/Install-Azure-Building-Blocks) npm package.
 
