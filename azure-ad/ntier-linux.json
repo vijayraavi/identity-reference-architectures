@@ -24,52 +24,13 @@
                 {
                   "name": "data",
                   "addressPrefix": "10.0.3.0/24"
-                },
-                {
-                  "name": "mgmt",
-                  "addressPrefix": "10.0.0.128/25"
                 }
               ],
               "dnsServers": []
             }
           ]
         },
-        
-        {
-          "type": "VirtualMachine",
-          "settings": {
-            "vmCount": 1,
-            "namePrefix": "ra-aad-ntier-mgmt",
-            "computerNamePrefix": "cn",
-            "size": "Standard_DS1_v2",
-            "adminUsername": "testuser",
-            "adminPassword": "<placeholder>",
-            "osType": "linux",
-            "virtualNetwork": {
-              "name": "ra-aad-ntier-vnet"
-            },
-            "nics": [
-              {
-                "isPublic": true,
-                "publicIPAllocationMethod": "Static",
-                "subnetName": "mgmt",
-                "privateIPAllocationMethod": "Dynamic"
-              }
-            ],
-            "imageReference": {
-              "publisher": "Canonical",
-              "offer": "UbuntuServer",
-              "sku": "14.04.5-LTS",
-              "version": "latest"
-            },
-            "dataDisks": {
-              "count": 1,
-              "diskSizeGB": 127,
-              "caching": "None",
-              "createOption": "Empty"
-            }
-          }
-        },
+
         {
           "type": "VirtualMachine",
           "settings": {
@@ -86,7 +47,8 @@
             "nics": [
               {
                 "subnetName": "web",
-                "privateIPAllocationMethod": "Dynamic"
+                "privateIPAllocationMethod": "Dynamic",
+                "isPublic": false
               }
             ],
             "imageReference": {
@@ -119,7 +81,8 @@
             "nics": [
               {
                 "subnetName": "biz",
-                "privateIPAllocationMethod": "Dynamic"
+                "privateIPAllocationMethod": "Dynamic",
+                "isPublic": false
               }
             ],
             "imageReference": {
@@ -152,7 +115,8 @@
             "nics": [
               {
                 "subnetName": "data",
-                "privateIPAllocationMethod": "Dynamic"
+                "privateIPAllocationMethod": "Dynamic",
+                "isPublic": false
               }
             ],
             "imageReference": {
@@ -346,30 +310,6 @@
         {
           "type": "NetworkSecurityGroup",
           "settings": [
-            {
-              "name": "ra-aad-ntier-mgmt-nsg",
-              "virtualNetworks": [
-                {
-                  "name": "ra-aad-ntier-vnet",
-                  "subnets": [
-                    "mgmt"
-                  ]
-                }
-              ],
-              "securityRules": [
-                {
-                  "name": "default-allow-ssh",
-                  "direction": "Inbound",
-                  "priority": 100,
-                  "sourceAddressPrefix": "*",
-                  "destinationAddressPrefix": "*",
-                  "sourcePortRange": "*",
-                  "destinationPortRange": 22,
-                  "access": "Allow",
-                  "protocol": "TCP"
-                }
-              ]
-            },
 
             {
               "name": "ra-aad-ntier-web-nsg",
@@ -405,17 +345,6 @@
                   "access": "Allow",
                   "priority": 200,
                   "direction": "Inbound"
-                },
-                {
-                  "name": "allow-mgmt-ssh",
-                  "direction": "Inbound",
-                  "priority": 300,
-                  "sourceAddressPrefix": "10.0.0.128/25",
-                  "destinationAddressPrefix": "*",
-                  "sourcePortRange": "*",
-                  "destinationPortRange": 22,
-                  "access": "Allow",
-                  "protocol": "TCP"
                 }
               ]
             },
@@ -442,17 +371,6 @@
                   "access": "Allow",
                   "priority": 100,
                   "direction": "Inbound"
-                },
-                {
-                  "name": "allow-mgmt-ssh",
-                  "direction": "Inbound",
-                  "priority": 200,
-                  "sourceAddressPrefix": "10.0.0.128/25",
-                  "destinationAddressPrefix": "*",
-                  "sourcePortRange": "*",
-                  "destinationPortRange": 22,
-                  "access": "Allow",
-                  "protocol": "TCP"
                 }
               ]
             },
@@ -481,17 +399,6 @@
                   "direction": "Inbound"
                 },
                 {
-                  "name": "allow-mgmt-ssh",
-                  "direction": "Inbound",
-                  "priority": 200,
-                  "sourceAddressPrefix": "10.0.0.128/25",
-                  "destinationAddressPrefix": "*",
-                  "sourcePortRange": "*",
-                  "destinationPortRange": 22,
-                  "access": "Allow",
-                  "protocol": "TCP"
-                },
-                {
                   "name": "allow-ops-center-web-traffic",
                   "description": "Allow web traffic to ops center.",
                   "protocol": "*",
@@ -500,13 +407,204 @@
                   "sourceAddressPrefix": "*",
                   "destinationAddressPrefix": "*",
                   "access": "Allow",
-                  "priority": 300,
+                  "priority": 200,
                   "direction": "Inbound"
                 }
               ]
             }
           ]
+        },
+
+        {
+          "type": "Template",
+          "settings": {
+            "template": {
+              "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+              "contentVersion": "1.0.0.0",
+              "parameters": {},
+              "variables": {
+                "vnetName": "ra-aad-ntier-vnet",
+                "bastionName": "ra-aad-ntier-bastion",
+                "bastionNsgName": "ra-aad-ntier-bastion-nsg",
+                "bastionIpName": "ra-aad-ntier-bastion-ip"
+              },
+              "resources": [
+                {
+                  "type": "Microsoft.Network/networkSecurityGroups",
+                  "apiVersion": "2019-09-01",
+                  "name": "[variables('bastionNsgName')]",
+                  "location": "[resourceGroup().location]",
+                  "properties": {
+                    "securityRules": [
+                      {
+                        "name": "in_gateway_manager_any",
+                        "properties": {
+                          "protocol": "*",
+                          "sourcePortRange": "*",
+                          "destinationPortRange": "*",
+                          "sourceAddressPrefix": "GatewayManager",
+                          "destinationAddressPrefix": "*",
+                          "access": "Allow",
+                          "priority": 100,
+                          "direction": "Inbound",
+                          "sourcePortRanges": [],
+                          "destinationPortRanges": [],
+                          "sourceAddressPrefixes": [],
+                          "destinationAddressPrefixes": []
+                        }
+                      },
+                      {
+                        "name": "in_azure_cloud_any",
+                        "properties": {
+                          "protocol": "*",
+                          "sourcePortRange": "*",
+                          "destinationPortRange": "*",
+                          "sourceAddressPrefix": "AzureCloud",
+                          "destinationAddressPrefix": "*",
+                          "access": "Allow",
+                          "priority": 110,
+                          "direction": "Inbound",
+                          "sourcePortRanges": [],
+                          "destinationPortRanges": [],
+                          "sourceAddressPrefixes": [],
+                          "destinationAddressPrefixes": []
+                        }
+                      },
+                      {
+                        "name": "in_any_https",
+                        "properties": {
+                          "protocol": "TCP",
+                          "sourcePortRange": "*",
+                          "destinationPortRange": "443",
+                          "sourceAddressPrefix": "*",
+                          "destinationAddressPrefix": "*",
+                          "access": "Allow",
+                          "priority": 120,
+                          "direction": "Inbound",
+                          "sourcePortRanges": [],
+                          "destinationPortRanges": [],
+                          "sourceAddressPrefixes": [],
+                          "destinationAddressPrefixes": []
+                        }
+                      },
+                      {
+                        "name": "out_azure_cloud_https",
+                        "properties": {
+                          "protocol": "*",
+                          "sourcePortRange": "*",
+                          "destinationPortRange": "443",
+                          "sourceAddressPrefix": "*",
+                          "destinationAddressPrefix": "AzureCloud",
+                          "access": "Allow",
+                          "priority": 100,
+                          "direction": "Outbound",
+                          "sourcePortRanges": [],
+                          "destinationPortRanges": [],
+                          "sourceAddressPrefixes": [],
+                          "destinationAddressPrefixes": []
+                        }
+                      },
+                      {
+                        "name": "out_virtualnetwork_rdp",
+                        "properties": {
+                          "protocol": "*",
+                          "sourcePortRange": "*",
+                          "destinationPortRange": "3389",
+                          "sourceAddressPrefix": "*",
+                          "destinationAddressPrefix": "VirtualNetwork",
+                          "access": "Allow",
+                          "priority": 110,
+                          "direction": "Outbound",
+                          "sourcePortRanges": [],
+                          "destinationPortRanges": [],
+                          "sourceAddressPrefixes": [],
+                          "destinationAddressPrefixes": []
+                        }
+                      },
+                      {
+                        "name": "out_virtualnetwork_ssh",
+                        "properties": {
+                          "protocol": "*",
+                          "sourcePortRange": "*",
+                          "destinationPortRange": "22",
+                          "sourceAddressPrefix": "*",
+                          "destinationAddressPrefix": "VirtualNetwork",
+                          "access": "Allow",
+                          "priority": 120,
+                          "direction": "Outbound",
+                          "sourcePortRanges": [],
+                          "destinationPortRanges": [],
+                          "sourceAddressPrefixes": [],
+                          "destinationAddressPrefixes": []
+                        }
+                      }
+                    ]
+                  }
+                },
+                {
+                  "type": "Microsoft.Network/virtualNetworks/subnets",
+                  "apiVersion": "2019-09-01",
+                  "name": "[concat(variables('vnetName'), '/', 'AzureBastionSubnet')]",
+                  "dependsOn": [
+                    "[resourceId('Microsoft.Network/networkSecurityGroups', variables('bastionNsgName'))]"
+                  ],
+                  "properties": {
+                    "addressPrefix": "10.0.254.0/27",
+                    "networkSecurityGroup": {
+                      "id": "[resourceId('Microsoft.Network/networkSecurityGroups', variables('bastionNsgName'))]"
+                    },
+                    "serviceEndpoints": [],
+                    "delegations": [],
+                    "privateEndpointNetworkPolicies": "Enabled",
+                    "privateLinkServiceNetworkPolicies": "Enabled"
+                  }
+                },
+                {
+                  "type": "Microsoft.Network/publicIPAddresses",
+                  "apiVersion": "2019-09-01",
+                  "name": "[variables('bastionIpName')]",
+                  "location": "[resourceGroup().location]",
+                  "sku": {
+                    "name": "Standard"
+                  },
+                  "properties": {
+                    "publicIPAddressVersion": "IPv4",
+                    "publicIPAllocationMethod": "Static",
+                    "idleTimeoutInMinutes": 4,
+                    "ipTags": []
+                  }
+                },
+                {
+                  "type": "Microsoft.Network/bastionHosts",
+                  "apiVersion": "2019-09-01",
+                  "name": "[variables('bastionName')]",
+                  "location": "[resourceGroup().location]",
+                  "dependsOn": [
+                    "[resourceId('Microsoft.Network/publicIPAddresses', variables('bastionIpName'))]",
+                    "[resourceId('Microsoft.Network/virtualNetworks/subnets', variables('vnetName'), 'AzureBastionSubnet')]"
+                  ],
+                  "properties": {
+                    "ipConfigurations": [
+                      {
+                        "name": "IpConf",
+                        "properties": {
+                          "privateIPAllocationMethod": "Dynamic",
+                          "publicIPAddress": {
+                            "id": "[resourceId('Microsoft.Network/publicIPAddresses',  variables('bastionIpName'))]"
+                          },
+                          "subnet": {
+                            "id": "[resourceId('Microsoft.Network/virtualNetworks/subnets', variables('vnetName'), 'AzureBastionSubnet')]"
+                          }
+                        }
+                      }
+                    ]
+                  }
+                }
+              ]
+            }
+          }
         }
+
       ]
     }
   }
